@@ -29,6 +29,7 @@
     ```
   - Props.children  (https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
       template with slot
+      ```
       function Card({ children }) {
        return (
          <div className="card">
@@ -43,6 +44,7 @@
          </Card>
        );
       }
+      ```
   - State of the forms (https://react.dev/learn/sharing-state-between-components)
       lifting state up when a few components use the same state in a parent component that is provided via props
   - References to components with ref

@@ -15,7 +15,8 @@
 
 ## Part B:
 
-Displaying loging form only when appropriate.
+  - Displaying loging form only when appropriate.
+    ```
       const [loginVisible, setLoginVisible] = useState(false)
       const hideWhenVisible = { display: loginVisible ? 'none' : '' }
       const showWhenVisible = { display: loginVisible ? '' : 'none' }
@@ -25,6 +26,7 @@ Displaying loging form only when appropriate.
       <div style={showWhenVisible}>
         // button/props.children
       </div>
+    ```
   - Props.children  (https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
       template with slot
       function Card({ children }) {

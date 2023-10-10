@@ -15,40 +15,32 @@
 
 ## Part B:
 
-    - Displaying loging form only when appropriate.
-        const [loginVisible, setLoginVisible] = useState(false)
-
-        const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-        const showWhenVisible = { display: loginVisible ? '' : 'none' }
-
-        <div style={hideWhenVisible}>
-          // button
-        </div>
-
-        <div style={showWhenVisible}>
-          // button/props.children
-        </div>
-
-    - Props.children  (https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
-        template with slot
-
-        function Card({ children }) {
-         return (
-           <div className="card">
-             {children}
-           </div>
-         );
-        }       
-
-        export default function Profile() {
-         return (
-           <Card>
-             <p>Other components or code(children)</p>
-           </Card>
-         );
-        }
-
-    - State of the forms (https://react.dev/learn/sharing-state-between-components)
-        lifting state up when a few components use the same state in a parent component that is provided via props
-
-    - References to components with ref
+Displaying loging form only when appropriate.
+      const [loginVisible, setLoginVisible] = useState(false)
+      const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+      const showWhenVisible = { display: loginVisible ? '' : 'none' }
+      <div style={hideWhenVisible}>
+        // button
+      </div>
+      <div style={showWhenVisible}>
+        // button/props.children
+      </div>
+  - Props.children  (https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
+      template with slot
+      function Card({ children }) {
+       return (
+         <div className="card">
+           {children}
+         </div>
+       );
+      }       
+      export default function Profile() {
+       return (
+         <Card>
+           <p>Other components or code(children)</p>
+         </Card>
+       );
+      }
+  - State of the forms (https://react.dev/learn/sharing-state-between-components)
+      lifting state up when a few components use the same state in a parent component that is provided via props
+  - References to components with ref

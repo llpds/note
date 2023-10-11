@@ -2,7 +2,7 @@
 
 ## Part A:
 
-- implemented token based authentication which enable users to log in to the application
+- token based authentication which enable users to log in to the application
   - handling login:
       NEW services/login.js: get user data using credentials by axios
       UPD App.js: users states, credantial handlers, login form
@@ -28,6 +28,7 @@
       </div>
     ```
   - Props.children  (https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children)
+  
       template with slot
       ```
       function Card({ children }) {
@@ -47,4 +48,8 @@
       ```
   - State of the forms (https://react.dev/learn/sharing-state-between-components)
       lifting state up when a few components use the same state in a parent component that is provided via props
-  - References to components with ref
+  - References to components with ref (https://react.dev/learn/referencing-values-with-refs)
+      useRef stores some object (unnecessary to rendering) that can be modified and is stored for the entire life of the component.
+      the child component can access the reference when it's wrapped forwardRef.
+      useImperativeHandle provides the declared method to the parent component.
+  - One point about components

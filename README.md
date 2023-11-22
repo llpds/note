@@ -112,3 +112,61 @@ After completing part 5b (ex 5.12) I decide not to do the same app as shown in c
     in course: by placeholder
       ```const input = screen.getByPlaceholderText('write note content here')```
 
+## Part D: End to End (E2E) tests.
+  - Cypress E2E library
+    Cypress tests are run completely within the browser.Other libraries run the tests in a Node process, which is connected to the browser through an API.
+
+    ```npm install --save-dev cypress```
+
+    package.json
+    ```
+      {
+       // ...
+       "scripts": {
+
+         "dev": "vite --host",
+         "build": "vite build",
+         "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+         "preview": "vite preview",
+         "server": "json-server -p3001 --watch db.json",
+         "test": "jest",
+
+         "cypress:open": "cypress open"
+       },
+       // ...
+      }
+    ```
+
+    to backend
+      ```
+          "start:test": "NODE_ENV=test node index.js"
+      ```
+
+    npm run cypress:open
+
+      E2E testing / Create new specs / cypress/e2e/note_app.cy.js:
+      
+      ```
+        describe('Note app', function() {
+          it('front page can be opened',  function() {
+            cy.visit('http://localhost:5173')
+            cy.contains('Notes')
+            cy.contains('Note app, Department of Computer Science, University of Helsinki 2023')
+          })
+
+          it('front page contains random text', function() {
+            cy.visit('http://localhost:5173')
+            cy.contains('wtf is this app?')
+          })
+
+          it('user can log in', function() {
+            cy.contains('log in').click()
+            cy.get('#username').type('mluukkai')    cy.get('#password').type('salainen')    cy.get('#login-button').click()
+            cy.contains('Matti Luukkainen logged in')
+          })
+        })
+      ```
+    
+    better use function declaration, not arrow func.
+
+    testing note form

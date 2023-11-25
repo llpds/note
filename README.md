@@ -1,8 +1,8 @@
 After completing part 5b (ex 5.12) I decide not to do the same app as shown in course and not to continue its repository. It look like double work and cost of time. But 'notes' could be useful and i move it to FSO.
 
-# FullStackOpen Part 5
+# FullStackOpen Part 5 (https://fullstackopen.com/en/part5)
 
-## Part A:
+## Part A: (https://fullstackopen.com/en/part5/login_in_frontend)
 
 - token based authentication which enable users to log in to the application
   - handling login:
@@ -15,7 +15,7 @@ After completing part 5b (ex 5.12) I decide not to do the same app as shown in c
 
       NB: remove value from localStorage: method removeItem('key') or clear() to delete all values.
 
-## Part B:
+## Part B: (https://fullstackopen.com/en/part5/props_children_and_proptypes)
 
   - Displaying loging form only when appropriate.
     ```
@@ -81,7 +81,7 @@ After completing part 5b (ex 5.12) I decide not to do the same app as shown in c
 
     npm run lint 
 
-## Part C:
+## Part C: (https://fullstackopen.com/en/part5/testing_react_apps)
 
   - Testing React apps
       test with jest (https://jestjs.io/)
@@ -112,7 +112,7 @@ After completing part 5b (ex 5.12) I decide not to do the same app as shown in c
     in course: by placeholder
       ```const input = screen.getByPlaceholderText('write note content here')```
 
-## Part D: End to End (E2E) tests.
+## Part D: End to End (E2E) tests. (https://fullstackopen.com/en/part5/end_to_end_testing)
   - Cypress E2E library
     Cypress tests are run completely within the browser.Other libraries run the tests in a Node process, which is connected to the browser through an API.
 
@@ -167,6 +167,178 @@ After completing part 5b (ex 5.12) I decide not to do the same app as shown in c
         })
       ```
     
-    better use function declaration, not arrow func.
+      better use function declaration, not arrow func.
 
-    testing note form
+  - testing note form
+      could use first or last: 
+      ```
+        cy.get('input:last').type('salainen')
+      ```
+      be better to give the input an id and search for the element by its id:
+      ```
+        cy.get('#password').type('salainen')
+      ```
+
+      structure for example:
+      ```
+        cy.contains('log in').click()
+        cy.get('#username').type('mluukkai')
+        cy.get('#password').type('salainen')
+        cy.get('#login-button').click()
+      ```
+
+  - Controlling the state of the database
+      for testing purpose on a backend need reset controller and functionality, then on the frontend can be used:
+      ```
+          cy.request('POST', 'http://localhost:3001/api/testing/reset')
+          const user = { ... }
+          cy.request('POST', 'http://localhost:3001/api/users/', user)
+          cy.visit('http://localhost:5173')
+      ```
+
+      backend controller:
+      ```
+        const testingRouter = require('express').Router()
+        const Note = require('../models/note')
+        const User = require('../models/user')
+
+        testingRouter.post('/reset', async (request, response) => {
+          await Note.deleteMany({})
+          await User.deleteMany({})
+
+          response.status(204).end()
+        })
+
+        module.exports = testingRouter
+      ```
+
+      backend app.js:
+      ```
+      ...
+        if (process.env.NODE_ENV === 'test') {
+          const testingRouter = require('./controllers/testing')
+          app.use('/api/testing', testingRouter)
+        }
+      ...
+      ```
+
+  - Failed login test
+    error message can defined by class:
+      ```
+        cy.get('.error').should('contain', 'wrong credentials') 
+        cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
+        cy.get('.error').should('have.css', 'border-style', 'solid')
+      ```
+
+      and with chaining:
+      ```
+        cy.get('.error')
+          .should('contain', 'wrong credentials')
+          .and('have.css', 'color', 'rgb(255, 0, 0)')
+          .and('have.css', 'border-style', 'solid')
+      ```
+
+      addition:
+      ```
+        cy.get('html').should('not.contain', 'Name logged in')
+      ```
+      or
+      ```
+        cy.contains('Name logged in').should('not.exist')
+      ```
+
+      p.s. Mozilla may cause errors when describing styles: answer Chrome.
+
+  - Bypassing the UI
+    instead of using login form we can use it manually, use post and put response to localstorage 
+    ```
+        cy.request('POST', 'http://localhost:3001/api/login', {
+          username: 'usrnm', password: 'pswrd'
+        }).then(response => {
+          localStorage.setItem('loggedNoteappUser', JSON.stringify(response.body))
+          cy.visit('http://localhost:5173')
+        })
+    ```
+
+    declare it as custom command in cypress/support/commands.js
+    ```
+      Cypress.Commands.add('login', ({ username, password }) => {
+        cy.request('POST', 'http://localhost:3001/api/login', {
+          username, password
+        }).then(({body}) => {
+          localStorage.setItem('loggedNoteappUser', JSON.stringify(body))
+          cy.visit('http://localhost:5173')
+        })
+      })
+    ```
+    test:
+    ```
+      cy.login({ username: 'usrnm', password: 'pswrd' })
+    ```
+
+    custom command for new note:
+    ```
+      Cypress.Commands.add('createNote', ({ content, important }) => {
+        cy.request({
+          url: 'http://localhost:3001/api/notes',
+          method: 'POST',
+          body: { content, important },
+          headers: {
+            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedNoteappUser')).token}`
+          }
+        })
+
+        cy.visit('http://localhost:5173')
+      })
+    ```
+    test:
+    ```
+      cy.createNote({ content: 'cntnt', important: true})
+    ```
+
+    define baseUrl and BACKEND for frontend in cypress.config.js:
+    ```
+      const { defineConfig } = require("cypress")
+
+      module.exports = defineConfig({
+        e2e: {
+          setupNodeEvents(on, config) {
+          },
+          baseUrl: 'http://localhost:5173'
+        },
+        env: {
+          BACKEND: 'http://localhost:3001/api'  }
+        })
+    ```
+    use: ``` cy.visit('') ``` instead ``` cy.visit('http://localhost:5173' ) ```
+    and `${Cypress.env('BACKEND')}/testing/reset` for backend
+
+  - Changing the importance of a note
+    sometimes a components could be separated, <span> for example cause error, use parent() and as()
+    ```
+      it('one of those can be made important', function () {
+        cy.contains('second note').parent().find('button').as('theButton')
+        cy.get('@theButton').click()
+        cy.get('@theButton').should('contain', 'make not important')
+      })
+    ```
+
+  - Running and debugging the tests
+    we can't use debugger in code because cypress command are like promises, if we want to access their return values, we have t use .then
+    ```
+      it('then example', function() {
+        cy.get('button').then( buttons => {
+          console.log('number of buttons', buttons.length)
+          cy.wrap(buttons[0]).click()
+        })
+      })
+    ```
+
+    or use graphic interface in the browser or run tests in console
+    add to package.json:
+    ```
+      "test:e2e": "cypress run"
+    ```
+    npm run test:e2e
+
+    by default video is disabled, in case of need in cypress.config.js add: 'video: true', don't forget add 'cypress/videos' to gitignore.

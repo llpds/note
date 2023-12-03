@@ -17,7 +17,7 @@
     "dev": "react-scripts --host",
     "build": "react-scripts build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "test": "jest",
+    "test": "jest noteReducer",
     "eject": "react-scripts eject",
     "server": "json-server -p3001 --watch db.json",
     "cypress:open": "cypress open",

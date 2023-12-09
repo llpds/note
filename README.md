@@ -35,12 +35,17 @@
 
   - Combined reducers
 
+    index.js/main.jsx:
+
       import { createStore, combineReducers } from 'redux'
 
       ...
 
 
-      const reducer = combineReducers({  notes: noteReducer,  filter: filterReducer})
+      const reducer = combineReducers({
+        notes: noteReducer,
+        filter: filterReducer
+      })
 
       const store = createStore(reducer)
 
@@ -56,4 +61,56 @@
         return filter  === 'IMPORTANT'
           ? notes.filter(note => note.important)
           : notes.filter(note => !note.important)
-        })  
+        })
+
+  - redux toolkit
+      
+      npm install @reduxjs/toolkit
+
+    index.js/main.jsx: (instead of Combined reducers)
+
+      import { configureStore } from '@reduxjs/toolkit'
+
+      const store = configureStore({
+        reducer: {
+          notes: noteReducer,
+          filter: filterReducer
+        }
+      })
+
+    noteReducer.js
+
+      import { createSlice } from '@reduxjs/toolkit'
+
+      ...
+
+      const noteSlice = createSlice({
+        name: 'notes',
+        initialState,
+        reducers: {
+          createNote(state, action) {
+            const content = action.payload
+            state.push({
+              content,
+              important: false,
+              id: generateId(),
+            })
+          },
+          toggleImportanceOf(state, action) {
+            const id = action.payload
+            const noteToChange = state.find(n => n.id === id)
+            const changedNote = { 
+              ...noteToChange, 
+              important: !noteToChange.important 
+            }
+            return state.map(note =>
+              note.id !== id ? note : changedNote 
+            )     
+          }
+        },
+      })
+
+      export const { createNote, toggleImportanceOf } = noteSlice.actions
+      export default noteSlice.reducer
+
+      now can use push. Immer uses the mutated state to produce a new, immutable state and thus the state changes remain immutable. (Redux Toolkit utilizes the Immer library )

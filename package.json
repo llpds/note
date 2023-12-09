@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.2.2",
     "eslint": "^8.53.0",
     "prop-types": "^15.8.1",

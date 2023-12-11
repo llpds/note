@@ -114,3 +114,68 @@
       export default noteSlice.reducer
 
       now can use push. Immer uses the mutated state to produce a new, immutable state and thus the state changes remain immutable. (Redux Toolkit utilizes the Immer library )
+
+## Part C: (https://fullstackopen.com/en/part6/communicating_with_server_in_a_redux_application)
+
+        npm install json-server --save-dev
+
+        "scripts": {
+          "server": "json-server -p3001 --watch db.json",
+          // ...
+        }
+
+  initial state in the root of the project in db.json
+
+  - Getting data from the backend
+
+    services/notes.js:
+        
+        import axios from 'axios'
+
+        const baseUrl = 'http://localhost:3001/notes'
+
+        const getAll = async () => {
+          const response = await axios.get(baseUrl)
+          return response.data
+        }
+
+        export default { getAll }
+
+    add to noteReducer.js
+
+          setNotes(state, action) { return action.payload }
+
+    add to app.js
+
+          import { useEffect } from 'react'
+          import noteService from './services/notes'
+          import { setNotes } from './reducers/noteReducer'
+          import { useDispatch } from 'react-redux'
+          ...
+            const dispatch = useDispatch()
+            useEffect(() => {
+              noteService.getAll().then(notes => dispatch(setNotes(notes)))
+            }, [])
+
+  - Sending data to the backend
+
+    add to services.note:
+        const createNew = async (content) => {
+          const object = { content, important: false }
+          const response = await axios.post(baseUrl, object)
+          return response.data
+        }
+
+    newNote:
+        const addNote = async (event) => {
+          event.preventDefault()
+          const content = event.target.note.value
+          event.target.note.value = ''
+          const newNote = await noteService.createNew(content)
+          dispatch(createNote(newNote))
+        }
+
+    noteReducer:
+        createNote(state, action) {
+          state.push(action.payload)
+        },

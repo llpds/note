@@ -119,6 +119,8 @@
 
         npm install json-server --save-dev
 
+  package.json:
+
         "scripts": {
           "server": "json-server -p3001 --watch db.json",
           // ...
@@ -128,8 +130,8 @@
 
   - Getting data from the backend
 
-    services/notes.js:
-        
+    services/notes.js
+
         import axios from 'axios'
 
         const baseUrl = 'http://localhost:3001/notes'
@@ -141,11 +143,11 @@
 
         export default { getAll }
 
-    add to noteReducer.js
+    noteReducer.js
 
           setNotes(state, action) { return action.payload }
 
-    add to app.js
+    app.js
 
           import { useEffect } from 'react'
           import noteService from './services/notes'
@@ -158,15 +160,16 @@
             }, [])
 
   - Sending data to the backend
+    services.note
 
-    add to services.note:
         const createNew = async (content) => {
           const object = { content, important: false }
           const response = await axios.post(baseUrl, object)
           return response.data
         }
 
-    newNote:
+    newNote
+
         const addNote = async (event) => {
           event.preventDefault()
           const content = event.target.note.value
@@ -175,7 +178,8 @@
           dispatch(createNote(newNote))
         }
 
-    noteReducer:
+    noteReducer
+    
         createNote(state, action) {
           state.push(action.payload)
         },

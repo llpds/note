@@ -190,7 +190,7 @@
        (https://github.com/reduxjs/redux-thunk)
     
     initialNotes:
-    >>app.js
+    >app.js
 
         import { initializeNotes } from './reducers/noteReducer'
 
@@ -198,7 +198,7 @@
             dispatch(initializeNotes())
           }, [dispatch])
 
-    >>noteReducer
+    >noteReducer
 
         export const initializeNotes = () => {
           return async dispatch => {
@@ -208,7 +208,7 @@
         }
 
     newNotes:
-    >>newNote
+    >newNote
 
         const addNote = async (event) => {
           event.preventDefault()
@@ -217,7 +217,7 @@
           dispatch(createNote(content))
         }
 
-    >>noteReducer
+    >noteReducer
 
         export const createNote = content => {
           return async dispatch => {
@@ -240,12 +240,12 @@
 
           import noteReducer from './reducers/noteReducer'
           import filterReducer from './reducers/filterReducer'
-          
+
           const store = configureStore({
             reducer: {
               notes: noteReducer,
               filter: filterReducer
             }
           })
-          
+
           export default store

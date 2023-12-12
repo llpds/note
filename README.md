@@ -249,3 +249,5 @@
           })
 
           export default store
+
+Redux Toolkit offers a multitude of tools to simplify asynchronous state management. Suitable tools for this use case are for example the createAsyncThunk function and the RTK Query API.

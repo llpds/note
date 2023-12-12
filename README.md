@@ -145,19 +145,19 @@
 
     noteReducer.js
 
-          setNotes(state, action) { return action.payload }
+        setNotes(state, action) { return action.payload }
 
     app.js
 
-          import { useEffect } from 'react'
-          import noteService from './services/notes'
-          import { setNotes } from './reducers/noteReducer'
-          import { useDispatch } from 'react-redux'
-          ...
-            const dispatch = useDispatch()
-            useEffect(() => {
-              noteService.getAll().then(notes => dispatch(setNotes(notes)))
-            }, [])
+        import { useEffect } from 'react'
+        import noteService from './services/notes'
+        import { setNotes } from './reducers/noteReducer'
+        import { useDispatch } from 'react-redux'
+        ...
+          const dispatch = useDispatch()
+          useEffect(() => {
+            noteService.getAll().then(notes => dispatch(setNotes(notes)))
+          }, [dispatch])
 
   - Sending data to the backend
     services.note
@@ -179,7 +179,73 @@
         }
 
     noteReducer
-    
+
         createNote(state, action) {
           state.push(action.payload)
         },
+
+  - Asynchronous actions and Redux thunk
+
+       Redux Thunk library allows you to implement asynchronous requests
+       (https://github.com/reduxjs/redux-thunk)
+    
+    initialNotes:
+    >>app.js
+
+        import { initializeNotes } from './reducers/noteReducer'
+
+          useEffect(()=> {
+            dispatch(initializeNotes())
+          }, [dispatch])
+
+    >>noteReducer
+
+        export const initializeNotes = () => {
+          return async dispatch => {
+            const notes = await noteService.getAll()
+            dispatch(setNotes(notes))
+          }
+        }
+
+    newNotes:
+    >>newNote
+
+        const addNote = async (event) => {
+          event.preventDefault()
+          const content = event.target.note.value
+          event.target.note.value = ''
+          dispatch(createNote(content))
+        }
+
+    >>noteReducer
+
+        export const createNote = content => {
+          return async dispatch => {
+            const newNote = await noteService.createNew(content)
+            dispatch(appendNote(newNote))
+          }
+        }
+
+
+    first, an asynchronous operation is executed, after which the action changing the state of the store is dispatched.
+
+    move the store definition into a separate module
+    index.js
+
+          import store from './store'
+
+    store.js
+
+          import { configureStore } from '@reduxjs/toolkit'
+
+          import noteReducer from './reducers/noteReducer'
+          import filterReducer from './reducers/filterReducer'
+          
+          const store = configureStore({
+            reducer: {
+              notes: noteReducer,
+              filter: filterReducer
+            }
+          })
+          
+          export default store
